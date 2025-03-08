@@ -21,6 +21,23 @@
       --text-primary: #ffffff;
       --text-secondary: #a0aec0;
     }
+    
+    /* Custom WebKit Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--secondary-bg);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(45deg, var(--gradient-end), var(--gradient-start));
+    }
+    
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Comfortaa', sans-serif;

@@ -36,34 +36,59 @@
     .form-container {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
-      padding: 2.5rem;
+      padding: 2.5rem 2rem;
       border-radius: 1rem;
       width: 100%;
       max-width: 400px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.2);
+      max-height: 90vh;
+      overflow-y: auto;
     }
     .form-container h2 {
       text-align: center;
-      margin-bottom: 1.5rem;
-      font-size: 2rem;
+      margin-bottom: 1.25rem;
+      font-size: 1.75rem;
       font-weight: 400;
       background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .form-container input {
-      width: 100%;
-      padding: 0.75rem 1rem;
+    .input-group {
+      position: relative;
       margin-bottom: 1rem;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
       border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 0.5rem;
       background: rgba(255, 255, 255, 0.05);
       color: #fff;
       font-size: 1rem;
+      transition: border-color 0.3s ease;
     }
-    .form-container input::placeholder {
+    .input-group input:focus {
+      border-color: var(--gradient-start);
+      outline: none;
+    }
+    .input-group input::placeholder {
       color: rgba(255, 255, 255, 0.7);
+    }
+    .input-group .icon-left {
+      position: absolute;
+      top: 50%;
+      left: 0.75rem;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .input-group .icon-right {
+      position: absolute;
+      top: 50%;
+      right: 0.75rem;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
     }
     .cta-btn {
       width: 100%;
@@ -98,10 +123,17 @@
 </head>
 <body>
   <div class="form-container">
-    <h2>Login to SecureChat</h2>
+    <h2>SecureChat</h2>
     <form id="loginForm">
-      <input type="email" id="loginEmail" placeholder="Email" required>
-      <input type="password" id="loginPassword" placeholder="Password" required>
+      <div class="input-group">
+        <span class="icon-left"><i class="fas fa-envelope"></i></span>
+        <input type="email" id="loginEmail" placeholder="Email" required>
+      </div>
+      <div class="input-group">
+        <span class="icon-left"><i class="fas fa-lock"></i></span>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <span class="icon-right" id="togglePassword"><i class="fas fa-eye"></i></span>
+      </div>
       <button type="submit" class="cta-btn">Login</button>
     </form>
     <div class="back-link">
@@ -115,10 +147,8 @@
   <!-- Notyf JS -->
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   <script>
-    // Create an instance of Notyf for professional toasts
     const notyf = new Notyf();
 
-    // Use your provided credentials (replace secret key with anon key in production)
     const supabaseUrl = 'https://obzkzwjoiaodqfdzvmue.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
@@ -143,6 +173,15 @@
           window.location.href = "index.html";
         }, 1000);
       }
+    });
+
+    // Toggle password visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const loginPassword = document.getElementById('loginPassword');
+    togglePassword.addEventListener('click', () => {
+      const type = loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+      loginPassword.setAttribute('type', type);
+      togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
     });
   </script>
 </body>
