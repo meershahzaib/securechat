@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,7 +23,13 @@
       --text-primary: #ffffff;
       --text-secondary: #a0aec0;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Comfortaa', sans-serif;
       background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
@@ -33,6 +40,7 @@
       justify-content: center;
       padding: 1rem;
     }
+
     .form-container {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
@@ -45,6 +53,7 @@
       max-height: 90vh;
       overflow-y: auto;
     }
+
     .form-container h2 {
       text-align: center;
       margin-bottom: 1.25rem;
@@ -54,10 +63,12 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
     .input-group {
       position: relative;
       margin-bottom: 1rem;
     }
+
     .input-group input {
       width: 100%;
       padding: 0.75rem 1rem 0.75rem 2.75rem;
@@ -68,13 +79,16 @@
       font-size: 1rem;
       transition: border-color 0.3s ease;
     }
+
     .input-group input:focus {
       border-color: var(--gradient-start);
       outline: none;
     }
+
     .input-group input::placeholder {
       color: rgba(255, 255, 255, 0.7);
     }
+
     .input-group .icon-left {
       position: absolute;
       top: 50%;
@@ -82,6 +96,7 @@
       transform: translateY(-50%);
       color: rgba(255, 255, 255, 0.7);
     }
+
     .input-group .icon-right {
       position: absolute;
       top: 50%;
@@ -90,6 +105,7 @@
       color: rgba(255, 255, 255, 0.7);
       cursor: pointer;
     }
+
     .cta-btn {
       width: 100%;
       padding: 1rem;
@@ -102,18 +118,22 @@
       cursor: pointer;
       transition: transform 0.3s ease;
     }
+
     .cta-btn:disabled {
       opacity: 0.7;
       cursor: not-allowed;
     }
+
     .cta-btn:hover:not(:disabled) {
       transform: translateY(-2px);
     }
+
     .back-link {
       text-align: center;
       margin-top: 1rem;
       font-size: 0.9rem;
     }
+
     .back-link a {
       color: var(--gradient-start);
       text-decoration: none;
@@ -121,6 +141,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="form-container">
     <h2>Create an Account</h2>
@@ -141,7 +162,7 @@
       </div>
       <button type="submit" class="cta-btn">Sign Up</button>
     </form>
-    
+
     <!-- Message displayed after signup -->
     <div id="signupMessage" style="display: none; text-align: center; margin-top: 1rem;">
       <p>Signup successful! Please check your email for the confirmation link.</p>
@@ -183,17 +204,17 @@
       const username = document.getElementById('signupUsername').value;
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
-      
+
       // Include username in the metadata during signup.
       const { error } = await supabaseClient.auth.signUp({
-  email,
-  password,
-  options: {
-    data: { username: username }  // This data is stored in user_metadata.
-  }
-});
+        email,
+        password,
+        options: {
+          data: { username: username }  // This goes into the user_metadata column.
+        }
+      });
 
-      
+
       if (error) {
         notyf.error(error.message);
         signupBtn.disabled = false;
@@ -216,4 +237,5 @@
     });
   </script>
 </body>
+
 </html>
