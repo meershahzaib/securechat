@@ -1,11 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - SecureChat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Comfortaa', sans-serif;
+      background: #f0f0f0;
+      color: #333;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .logout-btn {
+      padding: 0.5rem 1rem;
+      background: #11BDDE;
+      border: none;
+      border-radius: 0.5rem;
+      color: #fff;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+  </style>
 </head>
 <body>
-    Dashboard
+  <h1 class="text-3xl font-bold">Dashboard</h1>
+  <p>Welcome to your secure dashboard.</p>
+  <button id="logoutBtn" class="logout-btn">Logout</button>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const supabaseUrl = 'https://obzkzwjoiaodqfdzvmue.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function checkSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session || !session.user) {
+        window.location.href = "login.html";
+      }
+    }
+    checkSession();
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      const { error } = await supabaseClient.auth.signOut();
+      if (!error) {
+        window.location.href = "index.html";
+      }
+    });
+  </script>
 </body>
 </html>

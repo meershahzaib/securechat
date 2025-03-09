@@ -441,5 +441,29 @@
       });
     });
   </script>
+  
+  <!-- Supabase Client and Session Check -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const supabaseUrl = 'https://obzkzwjoiaodqfdzvmue.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function checkSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const authButtons = document.querySelector('.auth-buttons');
+      if (session && session.user) {
+        // If user is logged in, show a logout button instead of login/signup links
+        authButtons.innerHTML = '<button class="logout-btn" style="padding: 0.5rem 1.5rem; border-radius: 0.5rem; background: transparent; border: 2px solid var(--gradient-start); color: var(--text-primary); font-weight: 300; cursor: pointer;">Logout</button>';
+        document.querySelector('.logout-btn').addEventListener('click', async () => {
+          const { error } = await supabaseClient.auth.signOut();
+          if (!error) {
+            window.location.reload();
+          }
+        });
+      }
+    }
+    checkSession();
+  </script>
 </body>
 </html>

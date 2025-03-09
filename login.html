@@ -153,6 +153,15 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+    // Redirect to dashboard if already logged in
+    async function checkSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session && session.user) {
+        window.location.href = "dashboard.html";
+      }
+    }
+    checkSession();
+
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const loginBtn = document.querySelector('.cta-btn');

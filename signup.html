@@ -126,6 +126,10 @@
     <h2>Create an Account</h2>
     <form id="signupForm">
       <div class="input-group">
+        <span class="icon-left"><i class="fas fa-user"></i></span>
+        <input type="text" id="signupUsername" placeholder="Username" required>
+      </div>
+      <div class="input-group">
         <span class="icon-left"><i class="fas fa-envelope"></i></span>
         <input type="email" id="signupEmail" placeholder="Email" required>
       </div>
@@ -153,6 +157,15 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+    // Redirect to dashboard if already logged in
+    async function checkSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session && session.user) {
+        window.location.href = "dashboard.html";
+      }
+    }
+    checkSession();
+
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const signupBtn = document.querySelector('.cta-btn');
@@ -160,14 +173,26 @@
       signupBtn.disabled = true;
       signupBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing up...';
 
+      const username = document.getElementById('signupUsername').value;
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
+      
       const { data, error } = await supabaseClient.auth.signUp({ email, password });
       if (error) {
         notyf.error(error.message);
         signupBtn.disabled = false;
         signupBtn.innerHTML = originalText;
       } else {
+        // Insert additional user data (username) into the "profiles" table
+        const user = data.user;
+        if (user) {
+          const { error: profileError } = await supabaseClient.from('profiles').insert([
+            { id: user.id, username: username, email: email }
+          ]);
+          if (profileError) {
+            notyf.error(profileError.message);
+          }
+        }
         notyf.success("Signup successful! Please check your email for confirmation.");
         setTimeout(() => {
           window.location.href = "login.html";
