@@ -124,6 +124,7 @@
 <body>
   <div class="form-container">
     <h2>Create an Account</h2>
+    <!-- Signup Form -->
     <form id="signupForm">
       <div class="input-group">
         <span class="icon-left"><i class="fas fa-user"></i></span>
@@ -140,6 +141,12 @@
       </div>
       <button type="submit" class="cta-btn">Sign Up</button>
     </form>
+    
+    <!-- Message displayed after signup -->
+    <div id="signupMessage" style="display: none; text-align: center; margin-top: 1rem;">
+      <p>Signup successful! Please check your email for the confirmation link.</p>
+    </div>
+
     <div class="back-link">
       <p>Already have an account? <a href="login.html">Login</a></p>
       <p><a href="index.html">Back to Home</a></p>
@@ -152,7 +159,6 @@
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   <script>
     const notyf = new Notyf();
-
     const supabaseUrl = 'https://obzkzwjoiaodqfdzvmue.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
@@ -166,6 +172,7 @@
     }
     checkSession();
 
+    // Handle signup form submission
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const signupBtn = document.querySelector('.cta-btn');
@@ -177,26 +184,24 @@
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
       
-      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+      // Include username in the metadata during signup.
+      const { error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { username: username }
+        }
+      });
+      
       if (error) {
         notyf.error(error.message);
         signupBtn.disabled = false;
         signupBtn.innerHTML = originalText;
       } else {
-        // Insert additional user data (username) into the "profiles" table
-        const user = data.user;
-        if (user) {
-          const { error: profileError } = await supabaseClient.from('profiles').insert([
-            { id: user.id, username: username, email: email }
-          ]);
-          if (profileError) {
-            notyf.error(profileError.message);
-          }
-        }
-        notyf.success("Signup successful! Please check your email for confirmation.");
-        setTimeout(() => {
-          window.location.href = "login.html";
-        }, 1000);
+        notyf.success("Signup successful! Please check your email for the confirmation link.");
+        // Hide the signup form and show the message.
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('signupMessage').style.display = 'block';
       }
     });
 
