@@ -104,17 +104,6 @@
       border: none;
       color: white;
     }
-    .logout-btn {
-      padding: 0.5rem 1.5rem;
-      border-radius: 0.5rem;
-      background: transparent;
-      border: 2px solid var(--gradient-start);
-      color: var(--text-primary);
-      transition: background 0.3s ease;
-    }
-    .logout-btn:hover {
-      background: var(--gradient-start);
-    }
     .menu-btn, .close-menu {
       display: none;
       background: none;
@@ -326,7 +315,7 @@
         <a href="#features">Features</a>
         <a href="#security">Security</a>
         <a href="#about">About</a>
-        <div class="auth-buttons" id="authButtons">
+        <div class="auth-buttons">
           <a href="login.html" class="login-btn">Login</a>
           <a href="signup.html" class="signup-btn">Sign Up</a>
         </div>
@@ -421,28 +410,6 @@
   </footer>
 
   <script>
-    // Create Supabase client using your anon key
-    const supabaseUrl = 'https://obzkzwjoiaodqfdzvmue.supabase.co';
-    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI';
-    const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
-
-    async function checkSession() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      const authButtonsDiv = document.getElementById('authButtons');
-      if(session) {
-        authButtonsDiv.innerHTML = '<button id="logoutBtn" class="logout-btn">Logout</button>';
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-          const { error } = await supabaseClient.auth.signOut();
-          if(error) {
-            alert("Error logging out: " + error.message);
-          } else {
-            window.location.href = "login.html";
-          }
-        });
-      }
-    }
-    checkSession();
-
     document.addEventListener('DOMContentLoaded', () => {
       const menuBtn = document.getElementById('menuBtn');
       const closeMenu = document.getElementById('closeMenu');

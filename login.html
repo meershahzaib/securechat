@@ -41,6 +41,7 @@
       width: 100%;
       max-width: 400px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       max-height: 90vh;
       overflow-y: auto;
     }
@@ -169,7 +170,7 @@
       } else {
         notyf.success("Login successful!");
         setTimeout(() => {
-          window.location.href = "dashboard.html";
+          window.location.href = "index.html";
         }, 1000);
       }
     });
