@@ -186,12 +186,13 @@
       
       // Include username in the metadata during signup.
       const { error } = await supabaseClient.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { username: username }
-        }
-      });
+  email,
+  password,
+  options: {
+    data: { username: username }  // This data is stored in user_metadata.
+  }
+});
+
       
       if (error) {
         notyf.error(error.message);
