@@ -205,12 +205,11 @@
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
 
-      // Include username in the metadata during signup.
       const { error } = await supabaseClient.auth.signUp({
         email,
         password,
         options: {
-          data: { username: username }  // This goes into the user_metadata column.
+          data: { username: username } // This should store the username in user_metadata
         }
       });
 
