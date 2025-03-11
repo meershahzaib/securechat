@@ -12,57 +12,56 @@
   <style>
     body {
       font-family: 'Comfortaa', sans-serif;
-      background: #191a32;
+      background: #131313;
+      margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      margin: 0;
+      color: #fff;
     }
     .notification-container {
       background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 20px;
       padding: 2rem;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
       text-align: center;
       max-width: 400px;
       width: 90%;
-      animation: fadeIn 1s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 1s ease-out;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
+      from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
     .loader {
-      font-size: 40px;
+      font-size: 48px;
       margin-bottom: 20px;
-      color: #3498db;
-      animation: spin 1s linear infinite;
+      color: #007bff;
+      animation: spin 2s linear infinite;
     }
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
     .status-text {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       margin-bottom: 10px;
     }
     .success {
-      color: #4CAF50;
+      color: #28a745;
     }
     .error {
-      color: #ff4444;
-    }
-    .warning {
-      color: #FFC107;
+      color: #dc3545;
     }
   </style>
 </head>
 <body>
   <div class="notification-container">
-    <!-- Loader using Font Awesome spinner icon -->
-    <div class="loader" id="loader"><i class="fas fa-spinner fa-spin"></i></div>
+    <div class="loader" id="loader"><i class="fas fa-spinner"></i></div>
     <div id="status" class="status-text">Verifying your email address...</div>
   </div>
 
@@ -76,35 +75,35 @@
         if (!window.supabase?.createClient) {
           throw new Error('Security components failed to load. Please refresh the page.');
         }
-
+        
         // Initialize the Supabase client
         const supabase = window.supabase.createClient(
           'https://obzkzwjoiaodqfdzvmue.supabase.co',
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI'
         );
-
+        
         // Parse token from the URL hash (remove the leading "#")
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         const access_token = hashParams.get('access_token');
-
+        
         if (!access_token) {
           throw new Error('Invalid confirmation link: Missing verification token.');
         }
-
+        
         // Update status message
         statusEl.textContent = 'Finalizing verification...';
-
-        // In this flow auto sign-in is disabled,
-        // so we assume that verification is done once the user clicks the confirmation link.
+        
+        // In this flow, auto sign‑in is disabled,
+        // so we simply show a success message and instruct the user to log in.
         statusEl.innerHTML = 'Email verified successfully!<br>Redirecting....';
         statusEl.classList.add('success');
-        loader.style.color = '#4CAF50';
+        loader.style.color = '#28a745';
         
-        // Redirect to the login page after a short delay
+        // Redirect to login page after a short delay
         setTimeout(() => {
           window.location.href = 'login.html';
         }, 4000);
-
+      
       } catch (error) {
         console.error('Verification error:', error);
         loader.style.display = 'none';
