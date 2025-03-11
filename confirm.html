@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Confirmation - SecureChat</title>
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
+  <!-- Load Supabase from reliable CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.min.js"></script>
   <style>
     body {
       font-family: 'Comfortaa', sans-serif;
@@ -16,54 +18,115 @@
       min-height: 100vh;
       margin: 0;
     }
-    #message {
+
+    .container {
       text-align: center;
-      padding: 1rem;
+      max-width: 600px;
+      padding: 2rem;
+    }
+
+    .loader {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 20px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .status-text {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .success {
+      color: #4CAF50;
+    }
+
+    .error {
+      color: #ff4444;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div id="message">Verifying your email, please wait...</div>
-  <!-- Use a specific version of Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/supabase.min.js"></script>
+  <div class="container">
+    <div class="loader" id="loader"></div>
+    <div id="status" class="status-text">
+      Verifying your email address...
+    </div>
+  </div>
+
   <script>
-    window.addEventListener('DOMContentLoaded', function() {
-      // Check if the Supabase library is loaded
-      if (typeof window.supabase === 'undefined') {
-        console.error("Supabase library not loaded!");
-        document.getElementById('message').innerText = 'Failed to load security components.';
-        return;
+  (async function() {
+    const loader = document.getElementById('loader');
+    const statusEl = document.getElementById('status');
+    
+    try {
+      // Check Supabase availability
+      if (!window.supabase?.createClient) {
+        throw new Error('Security components failed to load. Please refresh the page.');
       }
-      
-      // Initialize the Supabase client
-      const supabaseUrl = 'https://obzkzwjoiaodqfdzvmue.supabase.co';
-      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI'; // Replace with your actual anon key.
-      const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-      
-      // Parse the token from the URL hash (remove the leading "#")
-      const hash = window.location.hash.substring(1);
-      const params = new URLSearchParams(hash);
-      const access_token = params.get('access_token');
-      const messageEl = document.getElementById('message');
-      
+
+      // Initialize client
+      const supabase = window.supabase.createClient(
+        'https://obzkzwjoiaodqfdzvmue.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI'
+      );
+
+      // Parse token from URL
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const access_token = hashParams.get('access_token');
+
       if (!access_token) {
-        messageEl.innerText = 'Invalid confirmation link: Missing token.';
-        return;
+        throw new Error('Invalid confirmation link: Missing verification token.');
       }
-      
-      // Set the session using the access token
-      supabaseClient.auth.setSession({ access_token }).then(({ data, error }) => {
-        if (error) {
-          messageEl.innerText = 'Error verifying email: ' + error.message;
-          console.error('Error verifying email:', error);
-        } else {
-          messageEl.innerText = 'Email verified successfully! Redirecting to login...';
-          setTimeout(() => {
-            window.location.href = 'login.html';
-          }, 3000);
-        }
+
+      // Show verifying status
+      statusEl.textContent = 'Finalizing verification...';
+
+      // Perform verification
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: access_token,
+        type: 'email'
       });
-    });
+
+      if (error) throw error;
+
+      // Success state
+      loader.style.borderTopColor = '#4CAF50';
+      statusEl.innerHTML = '🎉 Email verified successfully!<br>Redirecting to login...';
+      statusEl.classList.add('success');
+      
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2500);
+
+    } catch (error) {
+      // Error state
+      console.error('Verification error:', error);
+      loader.style.display = 'none';
+      statusEl.innerHTML = `❌ Verification failed:<br>${error.message}`;
+      statusEl.classList.add('error');
+      
+      // Optional: Add retry button
+      const retryButton = document.createElement('button');
+      retryButton.textContent = 'Try Again';
+      retryButton.style.marginTop = '1rem';
+      retryButton.style.padding = '0.5rem 1.5rem';
+      retryButton.addEventListener('click', () => window.location.reload());
+      statusEl.appendChild(retryButton);
+    }
+  })();
   </script>
 </body>
 </html>
