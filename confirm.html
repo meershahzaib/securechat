@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Confirmation - SecureChat</title>
-  <!-- Add Comfortaa font -->
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
   <style>
     body {
@@ -22,37 +21,38 @@
       padding: 1rem;
     }
   </style>
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
+  <!-- Use a specific version for the Supabase library -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
   <script defer>
     window.addEventListener('DOMContentLoaded', function() {
-      if (!window.supabase) {
+      // Check if the Supabase library is available
+      if (typeof window.supabase === 'undefined') {
+        console.error("Supabase library not loaded!");
         document.getElementById('message').innerText = 'Failed to load security components.';
         return;
       }
-
-      // Supabase client setup
+      
+      // Initialize Supabase client
       const supabaseUrl = 'https://obzkzwjoiaodqfdzvmue.supabase.co';
-      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI';
-      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-      // Get token from query parameters (not hash)
-      const urlParams = new URLSearchParams(window.location.search);
-      const access_token = urlParams.get('access_token');
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI'; // Replace with your actual anon key.
+      const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+      
+      // Parse token from the URL hash (since the URL uses a hash)
+      const hash = window.location.hash.substring(1); // Remove the '#' at the beginning.
+      const params = new URLSearchParams(hash);
+      const access_token = params.get('access_token');
       const messageEl = document.getElementById('message');
-
+      
       if (!access_token) {
         messageEl.innerText = 'Invalid confirmation link: Missing token.';
         return;
       }
-
-      // Proper email verification flow
-      supabase.auth.verifyOtp({
-        token_hash: access_token,
-        type: 'email'
-      }).then(({ error }) => {
+      
+      // Set the session using the access token
+      supabaseClient.auth.setSession({ access_token }).then(({ data, error }) => {
         if (error) {
-          messageEl.innerText = `Verification failed: ${error.message}`;
-          console.error('Verification error:', error);
+          messageEl.innerText = 'Error verifying email: ' + error.message;
+          console.error('Error verifying email:', error);
         } else {
           messageEl.innerText = 'Email verified successfully! Redirecting to login...';
           setTimeout(() => {
