@@ -118,13 +118,7 @@
       statusEl.innerHTML = `❌ Verification failed:<br>${error.message}`;
       statusEl.classList.add('error');
       
-      // Optional: Add retry button
-      const retryButton = document.createElement('button');
-      retryButton.textContent = 'Try Again';
-      retryButton.style.marginTop = '1rem';
-      retryButton.style.padding = '0.5rem 1.5rem';
-      retryButton.addEventListener('click', () => window.location.reload());
-      statusEl.appendChild(retryButton);
+      
     }
   })();
   </script>
