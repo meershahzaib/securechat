@@ -23,16 +23,15 @@
       --text-primary: #ffffff;
       --text-secondary: #a0aec0;
     }
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       font-family: 'Comfortaa', sans-serif;
-      background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+      font-weight: 300;
+      background: #131313 !important;
       color: var(--text-primary);
       min-height: 100vh;
       display: flex;
@@ -40,9 +39,8 @@
       justify-content: center;
       padding: 1rem;
     }
-
     .form-container {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.85);
       backdrop-filter: blur(10px);
       padding: 2.5rem 2rem;
       border-radius: 1rem;
@@ -52,8 +50,8 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
       max-height: 90vh;
       overflow-y: auto;
+      text-align: center;
     }
-
     .form-container h2 {
       text-align: center;
       margin-bottom: 1.25rem;
@@ -63,12 +61,10 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-
     .input-group {
       position: relative;
       margin-bottom: 1rem;
     }
-
     .input-group input {
       width: 100%;
       padding: 0.75rem 1rem 0.75rem 2.75rem;
@@ -77,18 +73,19 @@
       background: rgba(255, 255, 255, 0.05);
       color: #fff;
       font-size: 1rem;
+      font-family: 'Comfortaa', sans-serif;
+      font-weight: 300;
       transition: border-color 0.3s ease;
     }
-
     .input-group input:focus {
       border-color: var(--gradient-start);
       outline: none;
     }
-
     .input-group input::placeholder {
       color: rgba(255, 255, 255, 0.7);
+      font-family: 'Comfortaa', sans-serif;
+      font-weight: 300;
     }
-
     .input-group .icon-left {
       position: absolute;
       top: 50%;
@@ -96,7 +93,6 @@
       transform: translateY(-50%);
       color: rgba(255, 255, 255, 0.7);
     }
-
     .input-group .icon-right {
       position: absolute;
       top: 50%;
@@ -105,7 +101,6 @@
       color: rgba(255, 255, 255, 0.7);
       cursor: pointer;
     }
-
     .cta-btn {
       width: 100%;
       padding: 1rem;
@@ -114,30 +109,29 @@
       border-radius: 0.5rem;
       color: white;
       font-size: 1.125rem;
-      font-weight: 500;
+      font-family: 'Comfortaa', sans-serif;
+      font-weight: 300;
       cursor: pointer;
       transition: transform 0.3s ease;
+      margin-top: 1rem;
     }
-
     .cta-btn:disabled {
       opacity: 0.7;
       cursor: not-allowed;
     }
-
     .cta-btn:hover:not(:disabled) {
       transform: translateY(-2px);
     }
-
     .back-link {
       text-align: center;
       margin-top: 1rem;
       font-size: 0.9rem;
+      font-weight: 300;
     }
-
     .back-link a {
       color: var(--gradient-start);
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 300;
     }
   </style>
 </head>
@@ -209,10 +203,9 @@
         email,
         password,
         options: {
-          data: { username: username } // This should store the username in user_metadata
+          data: { username: username }
         }
       });
-
 
       if (error) {
         notyf.error(error.message);
@@ -220,7 +213,6 @@
         signupBtn.innerHTML = originalText;
       } else {
         notyf.success("Signup successful! Please check your email for the confirmation link.");
-        // Hide the signup form and show the message.
         document.getElementById('signupForm').style.display = 'none';
         document.getElementById('signupMessage').style.display = 'block';
       }
