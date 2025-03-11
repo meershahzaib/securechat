@@ -21,24 +21,27 @@
       padding: 1rem;
     }
   </style>
-  <!-- Use a specific version for the Supabase library -->
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-  <script defer>
+</head>
+<body>
+  <div id="message">Verifying your email, please wait...</div>
+  <!-- Use a specific version of Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/supabase.min.js"></script>
+  <script>
     window.addEventListener('DOMContentLoaded', function() {
-      // Check if the Supabase library is available
+      // Check if the Supabase library is loaded
       if (typeof window.supabase === 'undefined') {
         console.error("Supabase library not loaded!");
         document.getElementById('message').innerText = 'Failed to load security components.';
         return;
       }
       
-      // Initialize Supabase client
+      // Initialize the Supabase client
       const supabaseUrl = 'https://obzkzwjoiaodqfdzvmue.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI'; // Replace with your actual anon key.
       const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
       
-      // Parse token from the URL hash (since the URL uses a hash)
-      const hash = window.location.hash.substring(1); // Remove the '#' at the beginning.
+      // Parse the token from the URL hash (remove the leading "#")
+      const hash = window.location.hash.substring(1);
       const params = new URLSearchParams(hash);
       const access_token = params.get('access_token');
       const messageEl = document.getElementById('message');
@@ -62,8 +65,5 @@
       });
     });
   </script>
-</head>
-<body>
-  <div id="message">Verifying your email, please wait...</div>
 </body>
 </html>
