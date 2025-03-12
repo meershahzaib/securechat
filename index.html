@@ -259,20 +259,7 @@
       transform: translateY(-3px);
       box-shadow: 0 8px 25px rgba(17, 189, 222, 0.4);
     }
-    .secondary-btn {
-      padding: 1rem 2rem;
-      background: transparent;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-radius: 0.5rem;
-      color: var(--text-primary);
-      font-weight: 500;
-      font-size: 1.125rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
+    
     .secondary-btn:hover {
       transform: translateY(-3px);
       border-color: rgba(17, 189, 222, 0.4);
@@ -402,7 +389,6 @@
       background: linear-gradient(45deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      display: inline-block;
       position: relative;
     }
     .security h2::after {
@@ -613,6 +599,7 @@
     @media (max-width: 600px) {
       .hero-content h1 {
         font-size: 2.5rem;
+        padding-top: 5rem;
       }
       .hero-content p {
         font-size: 1rem;
@@ -680,7 +667,6 @@
           </div>
           <div class="cta-buttons">
             <button class="cta-btn"><i class="fas fa-rocket"></i> Start Secure Chat</button>
-            <button class="secondary-btn"><i class="fas fa-play-circle"></i> Watch Demo</button>
           </div>
         </div>
         <div class="hero-image">
