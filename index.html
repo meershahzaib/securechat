@@ -540,6 +540,18 @@
       pointer-events: none;
       z-index: 0;
     }
+
+    .mobile-para{
+      margin-top: 8rem;
+    border: 1px solid;
+    border-radius: 25px;
+    display: block;
+    width: 25rem;
+    text-align: center;
+    background-color: #0D101E;
+    padding: 5px;
+      
+    }
     
     /* Responsive Media Queries */
     @media (max-width: 992px) {
@@ -597,9 +609,18 @@
       }
     }
     @media (max-width: 600px) {
+      
+      .mobile-para{
+        border-radius: 20px;
+        border: 1px solid rgb(88, 82, 69);
+        width: auto;
+
+      }
+      .hero-content{
+        text-align: center;
+      }
       .hero-content h1 {
         font-size: 2.3rem;
-        padding-top: 8.4rem;
       }
       .hero-content p {
         font-size: 1rem;
@@ -650,6 +671,7 @@
       <div class="particles" id="particles"></div>
       <div class="hero-container">
         <div class="hero-content">
+          <P class="mobile-para"><i class="fa-solid fa-users"></i>  Now serving 1M+ Users Worldwide</P>
           <h1>Military-Grade Secure Communication</h1>
           <p>Experience uncompromising privacy with end-to-end encryption that meets the highest security standards. Your conversations remain completely private, just as they should be.</p>
           <div class="hero-features">
