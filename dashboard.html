@@ -12,28 +12,216 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
+    :root {
+      --primary-bg: #0a0a14;
+      --secondary-bg: #0f0f1e;
+      --gradient-start: #11BDDE;
+      --gradient-mid: #2a93d5;
+      --gradient-end: #4165C2;
+      --accent-color: var(--gradient-start);
+      --text-primary: #ffffff;
+      --text-secondary: #a0aec0;
+    }
+    /* Particle background styling */
     body {
       font-family: 'Comfortaa', sans-serif;
-      background: #f0f0f0;
-      color: #333;
+      font-weight: 300;
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
       min-height: 100vh;
+      position: relative;
+      padding: 0;
+      margin: 0;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(65,101,194,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(17,189,222,0.08) 0%, transparent 50%);
+      animation: pulse 15s infinite alternate;
+      top: 0;
+      left: 0;
+      z-index: -2;
+    }
+    body::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232a93d5' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.5;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    /* Navbar styling */
+    .navbar {
+      background-color: rgba(10,10,20,0.95);
+      backdrop-filter: blur(10px);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(30,30,50,0.5);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+    }
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 500;
+      background: linear-gradient(45deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .nav-links a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 300;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem;
+    }
+    .nav-links a:hover {
+      color: var(--gradient-start);
+    }
+    .menu-btn, .close-menu {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    /* Main content padding so content isn’t hidden under navbar */
+    main {
+      padding-top: 80px;
+    }
+    /* Dashboard content styling */
+    .dashboard-content {
       padding: 2rem;
+    }
+    .dashboard-content h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .dashboard-content p {
+      font-size: 1.125rem;
+      margin-bottom: 2rem;
     }
     .logout-btn {
       padding: 0.5rem 1rem;
-      background: #11BDDE;
+      background: var(--gradient-start);
       border: none;
       border-radius: 0.5rem;
-      color: #fff;
+      color: var(--text-primary);
       cursor: pointer;
-      margin-top: 1rem;
+    }
+    /* Off-canvas (mobile) menu styling */
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100vh;
+        width: 80%;
+        background: var(--secondary-bg);
+        flex-direction: column;
+        padding: 4rem 2rem;
+        transition: right 0.3s ease;
+        z-index: 999;
+      }
+      .nav-links a {
+        display: block;
+        margin-bottom: 1rem;
+      }
+      .nav-links::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background:
+          radial-gradient(circle at 20% 30%, rgba(65,101,194,0.08) 0%, transparent 50%),
+          radial-gradient(circle at 80% 70%, rgba(17,189,222,0.08) 0%, transparent 50%);
+        animation: pulse 15s infinite alternate;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+      .nav-links::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232a93d5' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.5;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+      .nav-links.active {
+        right: 0;
+      }
+      .menu-btn {
+        display: block;
+      }
+      .close-menu {
+        display: block;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1 class="text-3xl font-bold">Dashboard</h1>
-  <p>Welcome to your secure dashboard.</p>
-  <button id="logoutBtn" class="logout-btn">Logout</button>
+  <!-- Navbar for authenticated users -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-text">SecureChat</span>
+      </div>
+      <div class="nav-links" id="navLinks">
+        <button class="close-menu" id="closeMenu">×</button>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="chats.html">Chats</a>
+        <a href="contacts.html">Contacts</a>
+        <a href="newchat.html">New Chat</a>
+        <a href="start-conversation.html">Start Conversation</a>
+        <a href="settings.html">Settings</a>
+        <a href="support.html">Support</a>
+        <a href="#" id="navLogout">Logout</a>
+      </div>
+      <button class="menu-btn" id="menuBtn">☰</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="dashboard-content">
+      <h1>Dashboard</h1>
+      <p>Welcome to your secure dashboard.</p>
+      <button id="logoutBtn" class="logout-btn">Logout</button>
+    </div>
+  </main>
 
   <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -42,6 +230,7 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+    // Check if user is authenticated; if not, redirect to login.html
     async function checkSession() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session || !session.user) {
@@ -50,11 +239,47 @@
     }
     checkSession();
 
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
+    // Logout function (both navbar and dashboard logout)
+    async function logout() {
       const { error } = await supabaseClient.auth.signOut();
       if (!error) {
         window.location.href = "index.html";
       }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('navLogout').addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
+
+    // Off-canvas menu toggling
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuBtn = document.getElementById('menuBtn');
+      const closeMenu = document.getElementById('closeMenu');
+      const navLinks = document.getElementById('navLinks');
+
+      menuBtn.addEventListener('click', () => {
+        navLinks.classList.add('active');
+      });
+      closeMenu.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+      });
+      document.addEventListener('click', (e) => {
+        if (!navLinks.contains(e.target) && !menuBtn.contains(e.target)) {
+          navLinks.classList.remove('active');
+        }
+      });
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+            navLinks.classList.remove('active');
+          }
+        });
+      });
     });
   </script>
 </body>
