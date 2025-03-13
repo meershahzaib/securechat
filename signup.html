@@ -208,7 +208,33 @@
   <!-- Notyf JS -->
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   <script>
-    const notyf = new Notyf();
+    // Initialize Notyf with custom options
+    const notyf = new Notyf({
+      duration: 3000,
+      position: {
+        x: 'right',
+        y: 'top',
+      },
+      types: [
+        {
+          type: 'success',
+          background: '#11BDDE',
+          icon: {
+            className: 'fas fa-check',
+            tagName: 'i'
+          }
+        },
+        {
+          type: 'error',
+          background: '#e74c3c',
+          icon: {
+            className: 'fas fa-exclamation-circle',
+            tagName: 'i'
+          }
+        }
+      ]
+    });
+
     const supabaseUrl = 'https://obzkzwjoiaodqfdzvmue.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9iemt6d2pvaWFvZHFmZHp2bXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0NDkxMzQsImV4cCI6MjA1NzAyNTEzNH0.DqRzIu84lH46hZDL3j-h9iDPRRLv4lfoQ_gUnccuFOI';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
@@ -222,6 +248,28 @@
     }
     checkSession();
 
+    // Check if username already exists
+    async function checkUsernameExists(username) {
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('username')
+        .eq('username', username)
+        .single();
+      
+      return data !== null;
+    }
+
+    // Check if email already exists
+    async function checkEmailExists(email) {
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('email')
+        .eq('email', email)
+        .single();
+        
+      return data !== null;
+    }
+
     // Handle signup form submission
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -234,22 +282,48 @@
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
 
-      const { error } = await supabaseClient.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { username: username }
+      try {
+        // Check for duplicate username
+        const usernameExists = await checkUsernameExists(username);
+        if (usernameExists) {
+          notyf.error("Username already exists. Please choose a different username.");
+          signupBtn.disabled = false;
+          signupBtn.innerHTML = originalText;
+          return;
         }
-      });
 
-      if (error) {
-        notyf.error(error.message);
+        // Check for duplicate email
+        const emailExists = await checkEmailExists(email);
+        if (emailExists) {
+          notyf.error("Email already exists. Please use a different email or try logging in.");
+          signupBtn.disabled = false;
+          signupBtn.innerHTML = originalText;
+          return;
+        }
+
+        // Proceed with signup if no duplicates
+        const { error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { username: username }
+          }
+        });
+
+        if (error) {
+          notyf.error(error.message);
+          signupBtn.disabled = false;
+          signupBtn.innerHTML = originalText;
+        } else {
+          notyf.success("Signup successful! Please check your email for the confirmation link.");
+          document.getElementById('signupForm').style.display = 'none';
+          document.getElementById('signupMessage').style.display = 'block';
+        }
+      } catch (err) {
+        notyf.error("An unexpected error occurred. Please try again.");
+        console.error("Signup error:", err);
         signupBtn.disabled = false;
         signupBtn.innerHTML = originalText;
-      } else {
-        notyf.success("Signup successful! Please check your email for the confirmation link.");
-        document.getElementById('signupForm').style.display = 'none';
-        document.getElementById('signupMessage').style.display = 'block';
       }
     });
 
