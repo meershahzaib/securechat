@@ -646,6 +646,10 @@
       height: 3rem;
       width: 100%;
     }
+    
+    .mobile-none{
+      display: block;
+    }
 
     @media (max-width: 768px) {
       .nav-links {
@@ -700,6 +704,10 @@
     }
 
     @media (max-width: 600px) {
+
+      .mobile-none{
+        display: none;
+      }
 
       .mobile-para {
         border-radius: 20px;
@@ -779,7 +787,7 @@
               <i class="fas fa-lock" style="color: #11BDDE;"></i>
               <span>AES-256 Encryption</span>
             </div>
-            <div class="hero-feature">
+            <div class="hero-feature mobile-none">
               <i class="fas fa-eye-slash" style="color: #2a93d5;"></i>
               <span>Zero Knowledge</span>
             </div>
