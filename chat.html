@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp-like Chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comfortaa', sans-serif;
+            font-weight: 300;
+        }
+
+        body {
+            background-color: #121212;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Main Container */
+        .app-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            background-color: #1e1e1e;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 10%;
+            min-width: 80px;
+            background-color: #2a2a2a;
+            color: white;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            border-right: 1px solid #3a3a3a;
+        }
+
+        /* Custom Scrollbar */
+        .sidebar::-webkit-scrollbar,
+        .chat-messages::-webkit-scrollbar {
+            width: 3px;
+            height: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-track,
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb,
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #4a4a4a;
+            border-radius: 4px;
+        }
+
+        .sidebar-header {
+            padding: 20px 10px;
+            text-align: center;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .sidebar-header img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .sidebar-menu-item {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 13px;
+        }
+
+        .sidebar-menu-item:hover {
+            background-color: #3a3a3a;
+        }
+
+        .sidebar-menu-item.active {
+            background-color: #128c7e;
+        }
+
+        .sidebar-menu-item svg {
+            margin-right: 10px;
+            min-width: 20px;
+        }
+
+        .sidebar-menu-item span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #121212;
+            position: relative;
+        }
+
+        /* Menu Toggle for Mobile */
+        .menu-toggle {
+            display: none;
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 10;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Chat Header */
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background-color: #075e54;
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .avatar img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background-color: #4ad504;
+            border-radius: 50%;
+            border: 2px solid #075e54;
+        }
+
+        .user-details h3 {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .user-details p {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .icon {
+            cursor: pointer;
+            color: white;
+        }
+
+        /* Chat Messages */
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background-color: #262d31;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZGVmYXVsdC1wYXR0ZXJuIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0icmdiYSg1MCw1MCw1MCwwLjIpIj48L3JlY3Q+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2RlZmF1bHQtcGF0dGVybikiPjwvcmVjdD48L3N2Zz4=');
+            display: flex;
+            flex-direction: column;
+        }
+
+        .date-divider {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 12px;
+            color: #ccc;
+            background-color: rgba(50, 50, 50, 0.7);
+            padding: 5px 12px;
+            border-radius: 7px;
+            align-self: center;
+        }
+
+        .message {
+            max-width: 65%;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 7.5px;
+            position: relative;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background-color: #056162;
+            color: white;
+            border-top-right-radius: 0;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background-color: #262d31;
+            color: white;
+            border-top-left-radius: 0;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 4px;
+            float: right;
+            margin-left: 10px;
+        }
+
+        .message-status {
+            display: inline-block;
+            margin-left: 4px;
+        }
+
+        .message-status.sent {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .message-status.delivered {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .message-status.read {
+            color: #34b7f1;
+        }
+
+        .message-reaction {
+            position: absolute;
+            bottom: -10px;
+            right: 10px;
+            background-color: #262d31;
+            border-radius: 10px;
+            padding: 2px 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            font-size: 14px;
+            z-index: 1;
+        }
+
+        .message.received .message-reaction {
+            right: auto;
+            left: 10px;
+        }
+
+        .message-reply-info {
+            padding: 4px 8px;
+            margin-bottom: 4px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-left: 3px solid #128c7e;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .message-reply-name {
+            font-weight: bold;
+            color: #25d366;
+        }
+
+        .message-reply-text {
+            color: rgba(255, 255, 255, 0.7);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        /* Reply Container */
+        .reply-container {
+            display: none;
+            padding: 8px 16px;
+            background-color: #1f2c33;
+            border-top: 1px solid #3a3a3a;
+        }
+
+        .reply-container.active {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reply-content {
+            display: flex;
+            flex: 1;
+        }
+
+        .reply-bar {
+            width: 4px;
+            background-color: #00a884;
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+
+        .reply-text {
+            flex: 1;
+        }
+
+        .reply-name {
+            font-size: 13px;
+            font-weight: bold;
+            color: #00a884;
+        }
+
+        .reply-text p {
+            font-size: 13px;
+            color: #aaa;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 250px;
+        }
+
+        .close-reply {
+            background: none;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        /* Chat Input */
+        .chat-input {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            background-color: #1f2c33;
+            border-top: 1px solid #3a3a3a;
+        }
+
+        .input-icons {
+            display: flex;
+            gap: 16px;
+            margin-right: 10px;
+        }
+
+        .input-icons .icon {
+            color: #aaa;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 9px 12px;
+            border: none;
+            border-radius: 20px;
+            font-size: 15px;
+            background-color: #2a3942;
+            color: white;
+        }
+
+        #message-input::placeholder {
+            color: #aaa;
+        }
+
+        #message-input:focus {
+            outline: none;
+        }
+
+        #send-button {
+            background: none;
+            border: none;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #00a884;
+        }
+
+        #send-button .icon {
+            color: white;
+        }
+
+        /* Reaction Menu */
+        .reaction-menu {
+            display: none;
+            position: absolute;
+            background-color: #2a3942;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            padding: 8px;
+            z-index: 100;
+        }
+
+        .reaction-menu.active {
+            display: flex;
+        }
+
+        .reaction {
+            font-size: 20px;
+            padding: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .reaction:hover {
+            transform: scale(1.2);
+        }
+
+        /* Overlay for mobile sidebar */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-container {
+                width: 100%;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 250px;
+                z-index: 10;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+
+            .chat-header {
+                padding-left: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop" alt="Profile">
+                <h3>Your Name</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="sidebar-menu-item active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span>Dashboard</span>
+                </div>
+                <div class="sidebar-menu-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <span>Chats</span>
+                </div>
+                <div class="sidebar-menu-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span>Contacts</span>
+                </div>
+                <div class="sidebar-menu-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    <span>New Chat</span>
+                </div>
+                <div class="sidebar-menu-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Start Conversation</span>
+                </div>
+                <div class="sidebar-menu-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>Settings</span>
+                </div>
+                <div class="sidebar-menu-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span>Support</span>
+                </div>
+                <div class="sidebar-menu-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <!-- Menu Toggle for Mobile -->
+            <button class="menu-toggle" id="menu-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="user-info">
+                    <div class="avatar">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop" alt="User Avatar">
+                        <span class="status-dot"></span>
+                    </div>
+                    <div class="user-details">
+                        <h3>John Doe</h3>
+                        <p>online</p>
+                    </div>
+                </div>
+                <div class="header-icons">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chat-messages">
+                <div class="date-divider">Today</div>
+                <!-- Messages will be added here by JavaScript -->
+            </div>
+
+            <!-- Reply Container (Hidden by default) -->
+            <div class="reply-container" id="reply-container">
+                <div class="reply-content">
+                    <div class="reply-bar"></div>
+                    <div class="reply-text">
+                        <span class="reply-name">You</span>
+                        <p id="reply-message-text">Original message</p>
+                    </div>
+                </div>
+                <button class="close-reply" id="close-reply">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input">
+                <div class="input-icons">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </div>
+                <input type="text" id="message-input" placeholder="Type a message">
+                <button id="send-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+
+            <!-- Reaction Menu (Hidden by default) -->
+            <div class="reaction-menu" id="reaction-menu">
+                <div class="reaction" data-emoji="👍">👍</div>
+                <div class="reaction" data-emoji="❤️">❤️</div>
+                <div class="reaction" data-emoji="😂">😂</div>
+                <div class="reaction" data-emoji="😮">😮</div>
+                <div class="reaction" data-emoji="😢">😢</div>
+                <div class="reaction" data-emoji="🙏">🙏</div>
+            </div>
+        </div>
+
+        <!-- Overlay for mobile sidebar -->
+        <div class="overlay" id="overlay"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const chatMessages = document.getElementById('chat-messages');
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            const reactionMenu = document.getElementById('reaction-menu');
+            const replyContainer = document.getElementById('reply-container');
+            const closeReplyButton = document.getElementById('close-reply');
+            const replyMessageText = document.getElementById('reply-message-text');
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            // Variables
+            let longPressTimer;
+            let activeMessageElement = null;
+            let replyingToMessage = null;
+            
+            // Toggle sidebar on mobile
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+            
+            // Close sidebar when clicking overlay
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+            
+            // Sample messages for demo
+            const initialMessages = [
+                { text: "Hey there! How's it going?", time: "10:30 AM", sender: "them" },
+                { text: "I'm doing great! Just finished that project we were working on.", time: "10:32 AM", sender: "me", status: "read" },
+                { text: "That's awesome! Can you send me the files when you get a chance?", time: "10:33 AM", sender: "them" },
+                { text: "Sure thing! I'll email them to you right away.", time: "10:35 AM", sender: "me", status: "delivered" }
+            ];
+            
+            // Load initial messages
+            initialMessages.forEach(msg => {
+                addMessage(msg.text, msg.time, msg.sender, msg.status);
+            });
+            
+            // Send message function
+            function sendMessage() {
+                const messageText = messageInput.value.trim();
+                if (messageText === '') return;
+                
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const formattedHours = hours % 12 || 12;
+                const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+                const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
+                
+                // Create message element
+                const messageElement = addMessage(messageText, timeString, 'me', 'sent', replyingToMessage);
+                
+                // Clear input and reply state
+                messageInput.value = '';
+                closeReply();
+                
+                // Simulate received message after a delay
+                setTimeout(() => {
+                    // Update status to delivered
+                    updateMessageStatus(messageElement, 'delivered');
+                    
+                    // Simulate read after another delay
+                    setTimeout(() => {
+                        updateMessageStatus(messageElement, 'read');
+                    }, 1000);
+                }, 1000);
+                
+                // Simulate reply after a delay
+                setTimeout(() => {
+                    const replies = [
+                        "That sounds great!",
+                        "I'll get back to you on that.",
+                        "Thanks for letting me know!",
+                        "Can we discuss this later?",
+                        "I appreciate your message!"
+                    ];
+                    const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                    addMessage(randomReply, timeString, 'them', null, messageText);
+                }, 3000);
+            }
+            
+            // Add message to chat
+            function addMessage(text, time, sender, status, replyTo = null) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                messageElement.classList.add(sender === 'me' ? 'sent' : 'received');
+                
+                let messageHTML = '';
+                
+                // Add reply info if replying to a message
+                if (replyTo) {
+                    messageHTML += `
+                        <div class="message-reply-info">
+                            <div class="message-reply-name">${sender === 'me' ? 'You' : 'John'}</div>
+                            <div class="message-reply-text">${replyTo}</div>
+                        </div>
+                    `;
+                }
+                
+                messageHTML += `
+                    <div class="message-content">${text}</div>
+                    <div class="message-time">
+                        ${time}
+                        ${sender === 'me' ? `<span class="message-status ${status || ''}">
+                            ${status === 'sent' ? '✓' : status === 'delivered' ? '✓✓' : status === 'read' ? '✓✓' : ''}
+                        </span>` : ''}
+                    </div>
+                `;
+                
+                messageElement.innerHTML = messageHTML;
+                messageElement.dataset.text = text;
+                
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Add event listeners for long press
+                messageElement.addEventListener('mousedown', startLongPress);
+                messageElement.addEventListener('touchstart', startLongPress, { passive: true });
+                messageElement.addEventListener('mouseup', cancelLongPress);
+                messageElement.addEventListener('mouseleave', cancelLongPress);
+                messageElement.addEventListener('touchend', cancelLongPress);
+                messageElement.addEventListener('touchcancel', cancelLongPress);
+                
+                // Add double click for reply
+                messageElement.addEventListener('dblclick', function() {
+                    startReply(messageElement);
+                });
+                
+                return messageElement;
+            }
+            
+            // Update message status (sent, delivered, read)
+            function updateMessageStatus(messageElement, newStatus) {
+                const statusElement = messageElement.querySelector('.message-status');
+                if (statusElement) {
+                    statusElement.className = `message-status ${newStatus}`;
+                    statusElement.innerHTML = newStatus === 'sent' ? '✓' : newStatus === 'delivered' ? '✓✓' : newStatus === 'read' ? '✓✓' : '';
+                }
+            }
+            
+            // Long press handling
+            function startLongPress(e) {
+                activeMessageElement = this;
+                
+                longPressTimer = setTimeout(() => {
+                    showReactionMenu(activeMessageElement, e);
+                }, 500); // 0.5 seconds for long press
+            }
+            
+            function cancelLongPress() {
+                clearTimeout(longPressTimer);
+            }
+            
+            // Show reaction menu
+            function showReactionMenu(messageElement, e) {
+                // Position the menu near the message
+                const rect = messageElement.getBoundingClientRect();
+                const isReceived = messageElement.classList.contains('received');
+                
+                reactionMenu.style.top = `${rect.top - 50}px`;
+                
+                if (isReceived) {
+                    reactionMenu.style.left = `${rect.left}px`;
+                } else {
+                    reactionMenu.style.left = `${rect.right - reactionMenu.offsetWidth}px`;
+                }
+                
+                reactionMenu.classList.add('active');
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', closeReactionMenu);
+                e.stopPropagation();
+            }
+            
+            // Close reaction menu
+            function closeReactionMenu() {
+                reactionMenu.classList.remove('active');
+                document.removeEventListener('click', closeReactionMenu);
+            }
+            
+            // Add reaction to message
+            function addReaction(emoji, messageElement) {
+                // Remove existing reaction if any
+                const existingReaction = messageElement.querySelector('.message-reaction');
+                if (existingReaction) {
+                    existingReaction.remove();
+                }
+                
+                // Add new reaction
+                const reactionElement = document.createElement('div');
+                reactionElement.classList.add('message-reaction');
+                reactionElement.textContent = emoji;
+                messageElement.appendChild(reactionElement);
+            }
+            
+            // Reply functionality
+            function startReply(messageElement) {
+                replyingToMessage = messageElement.dataset.text;
+                replyMessageText.textContent = replyingToMessage;
+                replyContainer.classList.add('active');
+                messageInput.focus();
+            }
+            
+            function closeReply() {
+                replyingToMessage = null;
+                replyContainer.classList.remove('active');
+            }
+            
+            // Event Listeners
+            sendButton.addEventListener('click', sendMessage);
+            
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            closeReplyButton.addEventListener('click', closeReply);
+            
+            // Set up reaction buttons
+            document.querySelectorAll('.reaction').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (activeMessageElement) {
+                        addReaction(this.dataset.emoji, activeMessageElement);
+                        closeReactionMenu();
+                    }
+                });
+            });
+            
+            // Make sidebar menu items clickable
+            document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.sidebar-menu-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Close sidebar on mobile after clicking a menu item
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('active');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
